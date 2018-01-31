@@ -1,0 +1,12 @@
+#!/bin/sh -l
+
+# get current container IP
+IP=`ip a s eth0 | grep inet | sed "s/\s\s*/;/g" | cut -d";" -f3 | cut -d"/" -f1`
+
+# set "listen_address"
+sed -i.bkp "s/localhost/${IP}/g" ${CASSANDRA_HOME}/conf/cassandra.yaml
+
+# add current IP to seeds
+sed -i.bkp "s/seeds: \"127\.0\.0\.1\"/seeds: \"${IP}\"/g" ${CASSANDRA_HOME}/conf/cassandra.yaml
+
+${CASSANDRA_HOME}/bin/cassandra -f
